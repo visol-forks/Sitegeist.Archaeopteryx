@@ -33,6 +33,19 @@ export interface ILinkType<ModelType = any, OptionsType extends object = {}> {
     Preview: React.FC<LinkTypeProps<ModelType, OptionsType>>
     LoadingEditor: React.FC<LinkTypeStaticProps<OptionsType>>
     Editor: React.FC<Object.Nullable<LinkTypeProps<ModelType, OptionsType>, 'link' | 'model'>>
+    /** Replaces the free-text anchor field when isEnabledFor(options) holds */
+    AnchorEditor?: {
+        isEnabledFor: (options: Object.Partial<OptionsType, 'deep'>) => boolean
+        Editor: React.FC<AnchorEditorProps<ModelType, OptionsType>>
+    }
+}
+
+export interface AnchorEditorProps<ModelType = any, OptionsType extends object = {}> {
+    /** The link type's current model from the form, e.g. the selected node */
+    model: null | Partial<ModelType>
+    options: Object.Partial<OptionsType, 'deep'>
+    value: undefined | string
+    onChange: (value: undefined | string) => void
 }
 
 export interface ILinkTypeFactoryApi {
@@ -43,7 +56,7 @@ export function makeLinkType<ModelType = any, OptionsType extends object = {}>(
     id: string,
     createOptions: (factoryApi: ILinkTypeFactoryApi) => Object.Optional<
         Omit<ILinkType<ModelType, OptionsType>, 'id'>,
-        'supportedLinkOptions' | 'Icon' | 'Title' | 'LoadingPreview' | 'LoadingEditor'
+        'supportedLinkOptions' | 'Icon' | 'Title' | 'LoadingPreview' | 'LoadingEditor' | 'AnchorEditor'
     >
 ): ILinkType<ModelType, OptionsType> {
     const createError = (message: string, cause?: Error) =>

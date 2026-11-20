@@ -1,13 +1,14 @@
 import * as React from 'react';
-import {Field} from 'react-final-form';
+import {Field, useFormState} from 'react-final-form';
 
 import {TextInput, CheckBox} from '@neos-project/react-ui-components';
 
-import {ILinkOptions} from '../../domain';
+import {ILinkOptions, ILinkType, useEditorState} from '../../domain';
 import {Layout} from '../../presentation';
 import {useI18n} from '@sitegeist/archaeopteryx-neos-bridge';
 
 export const Settings: React.FC<{
+    linkType: ILinkType
     enabledLinkOptions: (keyof ILinkOptions)[]
     initialValue?: {
         anchor?: string
@@ -17,6 +18,14 @@ export const Settings: React.FC<{
     }
 }> = props => {
     const i18n = useI18n();
+    const {editorOptions} = useEditorState();
+    const linkTypeOptions = editorOptions.linkTypes?.[props.linkType.id] as any ?? {};
+    const {values} = useFormState({subscription: {values: true}});
+    // Same key as the FieldGroup prefix of the link type's editor
+    const linkTypeModel = values?.linkTypeProps?.[props.linkType.id.split('.').join('_')] ?? null;
+    const AnchorEditor = props.linkType.AnchorEditor?.isEnabledFor(linkTypeOptions)
+        ? props.linkType.AnchorEditor.Editor
+        : null;
 
     return (
         <Layout.Stack>
@@ -27,7 +36,18 @@ export const Settings: React.FC<{
                             name="options.anchor"
                             initialValue={props.initialValue?.anchor}
                             >
-                            {({input}) => (
+                            {({input}) => AnchorEditor ? (
+                                // No <label>: it would forward clicks inside the dropdown to its toggle
+                                <div>
+                                    {i18n('Sitegeist.Archaeopteryx:Main:options.label.anchor')}:
+                                    <AnchorEditor
+                                        model={linkTypeModel}
+                                        options={linkTypeOptions}
+                                        value={input.value || undefined}
+                                        onChange={value => input.onChange(value ?? '')}
+                                    />
+                                </div>
+                            ) : (
                                 <label>
                                     {i18n('Sitegeist.Archaeopteryx:Main:options.label.anchor')}:
                                     <TextInput type="text" {...input}/>

@@ -1,4 +1,13 @@
 -
+  name: 'GetAnchorTargets Query'
+  uriPattern: 'neos/archaeopteryx/get-anchor-targets'
+  defaults:
+    '@package': 'Sitegeist.Archaeopteryx'
+    '@subpackage': 'Application\GetAnchorTargets'
+    '@controller': 'GetAnchorTargets'
+    '@action': 'ignored'
+
+-
   name: 'GetChildrenForTreeNode Query'
   uriPattern: 'neos/archaeopteryx/get-children-for-tree-node'
   defaults:

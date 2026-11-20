@@ -67,10 +67,11 @@ const getModelByLinkType = (linkType: string, cursorLink: string) => {
 
 type LinkButtonPreviewProps = {
     cursorLink?: string;
+    linkTypesOptions?: Record<string, any>;
     onClick: () => void;
 }
 
-export const LinkButtonPreview = ({ cursorLink, onClick }: LinkButtonPreviewProps) => {
+export const LinkButtonPreview = ({ cursorLink, linkTypesOptions, onClick }: LinkButtonPreviewProps) => {
 
     const [show, setShow] = React.useState(true)
 
@@ -94,7 +95,7 @@ export const LinkButtonPreview = ({ cursorLink, onClick }: LinkButtonPreviewProp
             <ErrorBoundary>
                 <linkType.Preview
                     model={model}
-                    options={{}}
+                    options={linkTypesOptions?.[linkType.id] ?? {}}
                     link={{href: cursorLink}}
                 />
             </ErrorBoundary>

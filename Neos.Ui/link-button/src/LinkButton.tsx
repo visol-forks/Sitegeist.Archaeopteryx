@@ -129,7 +129,11 @@ export const LinkButton: React.FC<Props> = props => {
                 icon={Boolean(props.formattingUnderCursor.link) ? 'unlink' : 'link'}
                 onClick={handleLinkButtonClick}
             />
-            <LinkButtonPreview cursorLink={props.formattingUnderCursor.link} onClick={handleLinkButtonClick} />
+            <LinkButtonPreview
+                cursorLink={props.formattingUnderCursor.link}
+                linkTypesOptions={editorOptions.linkTypes}
+                onClick={handleLinkButtonClick}
+            />
         </Container>
     );
 };

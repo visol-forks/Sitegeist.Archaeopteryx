@@ -150,7 +150,7 @@ const DialogWithEmptyValue: React.FC<{
                                         <Preview
                                             model={form.getState().values.linkTypeProps?.[linkType.id.split('.').join('_')]}
                                             options={editorOptions.linkTypes?.[linkType.id] as any ?? {}}
-                                            link={{href: ''}}
+                                            link={{href: '', options: form.getState().values.options}}
                                         />
                                     </ErrorBoundary>
                                 </Deletable>
@@ -165,6 +165,7 @@ const DialogWithEmptyValue: React.FC<{
 
                             {enabledLinkOptions.length && linkType.supportedLinkOptions.length ? (
                                 <Settings
+                                    linkType={linkType}
                                     enabledLinkOptions={enabledLinkOptions.filter(
                                         option => linkType.supportedLinkOptions.includes(option)
                                     )}
@@ -229,7 +230,8 @@ const DialogWithValue: React.FC<{
                                         <Preview
                                             model={model}
                                             options={editorOptions.linkTypes?.[linkType.id] as any ?? {}}
-                                            link={props.value}
+                                            // The options currently in the form, so the preview shows the chosen anchor
+                                            link={{...props.value, options: form.getState().values.options ?? props.value.options}}
                                         />
                                     </ErrorBoundary>
                                 </Deletable>
@@ -243,6 +245,7 @@ const DialogWithValue: React.FC<{
 
                             {enabledLinkOptions.length && linkType.supportedLinkOptions.length ? (
                                 <Settings
+                                    linkType={linkType}
                                     initialValue={props.value.options}
                                     enabledLinkOptions={enabledLinkOptions.filter(
                                         option => linkType.supportedLinkOptions.includes(option)

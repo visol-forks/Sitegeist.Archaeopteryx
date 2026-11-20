@@ -6,3 +6,5 @@
  * source code.
  */
 export { getNodeSummary } from "./getNodeSummary";
+export { getAnchorTargets } from "./getAnchorTargets";
+export type { AnchorTargetDTO } from "./getAnchorTargets";

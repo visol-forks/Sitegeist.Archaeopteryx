@@ -39,7 +39,7 @@
             <!-- Link Options -->
             <trans-unit id="options.label.anchor" xml:space="preserve" approved="yes">
                 <source>Anchor</source>
-                <target>Ancrage</target>
+                <target>Ancre</target>
             </trans-unit>
             <trans-unit id="options.label.title" xml:space="preserve" approved="yes">
                 <source>Title</source>
