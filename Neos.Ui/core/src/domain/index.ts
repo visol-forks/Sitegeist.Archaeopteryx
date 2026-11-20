@@ -1,4 +1,4 @@
-export type {ILink, ILinkOptions, ILinkType} from './Link';
+export type {ILink, ILinkOptions, ILinkType, AnchorEditorProps} from './Link';
 export {
     makeLinkType,
     useLinkTypes,

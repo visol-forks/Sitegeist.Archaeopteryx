@@ -170,6 +170,25 @@ The `Document` Link Type can be configured as follows:
                 allowedNodeTypes: ['Vendor.Site:Mixin.ReferenceableDocument',] # a list of allowed linkable node types or super types
 ```
 
+#### Anchor targets (links to sections of a page)
+
+By default, the anchor of a document link is a free-text field (see [Link Options](#link-options)). With `anchorTargets`, it becomes a select box that lists the content nodes of the selected document whose node type is in the allowlist. Choosing one appends `#<anchor>` to the link, for example `node://<document>#c<content-node-identifier>`.
+
+```yaml
+linking:
+  anchor: true # the anchor link option must be enabled
+  'Sitegeist.Archaeopteryx':
+    linkTypes:
+      'Sitegeist.Archaeopteryx:Node':
+        anchorTargets:
+          nodeTypes: ['Vendor.Site:Content.Section'] # required, sub types match as well
+          anchorPattern: 'c{nodeAggregateId}'      # default
+```
+
+For the Inspector editor, the same `anchorTargets` go under `editorOptions.linkTypes`, together with `editorOptions.anchor: true`.
+
+The content below the document is searched in document order, without descending into child documents. Archaeopteryx only writes the anchor: the frontend has to render an element with the matching `id`, for example `<span id="c{node.identifier}"></span>` inside the content element. An anchor that no longer exists on the selected document is shown as "not found on this page", and the link still opens the document.
+
 ### Asset
 
 <p align="center">

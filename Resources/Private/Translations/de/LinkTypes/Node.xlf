@@ -23,6 +23,32 @@
                 <source>Node is required</source>
                 <target>Eine Seite ist erforderlich</target>
             </trans-unit>
+
+            <!-- Anchor targets -->
+            <trans-unit id="anchorTargets.placeholder" xml:space="preserve" approved="yes">
+                <source>No anchor (top of the page)</source>
+                <target>Kein Anker (Seitenanfang)</target>
+            </trans-unit>
+
+            <trans-unit id="anchorTargets.selectDocumentFirst" xml:space="preserve" approved="yes">
+                <source>Select a page first</source>
+                <target>Zuerst eine Seite auswählen</target>
+            </trans-unit>
+
+            <trans-unit id="anchorTargets.empty" xml:space="preserve" approved="yes">
+                <source>This page has no anchor targets</source>
+                <target>Diese Seite hat keine Sprungziele</target>
+            </trans-unit>
+
+            <trans-unit id="anchorTargets.notFound" xml:space="preserve" approved="yes">
+                <source>not found on this page</source>
+                <target>auf dieser Seite nicht gefunden</target>
+            </trans-unit>
+
+            <trans-unit id="anchorTargets.hidden" xml:space="preserve" approved="yes">
+                <source>hidden</source>
+                <target>verborgen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

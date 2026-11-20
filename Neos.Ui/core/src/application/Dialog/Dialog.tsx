@@ -165,6 +165,7 @@ const DialogWithEmptyValue: React.FC<{
 
                             {enabledLinkOptions.length && linkType.supportedLinkOptions.length ? (
                                 <Settings
+                                    linkType={linkType}
                                     enabledLinkOptions={enabledLinkOptions.filter(
                                         option => linkType.supportedLinkOptions.includes(option)
                                     )}
@@ -243,6 +244,7 @@ const DialogWithValue: React.FC<{
 
                             {enabledLinkOptions.length && linkType.supportedLinkOptions.length ? (
                                 <Settings
+                                    linkType={linkType}
                                     initialValue={props.value.options}
                                     enabledLinkOptions={enabledLinkOptions.filter(
                                         option => linkType.supportedLinkOptions.includes(option)

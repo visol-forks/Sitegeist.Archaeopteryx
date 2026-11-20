@@ -7,6 +7,7 @@
  */
 import React from "react";
 import { useAsync } from "react-use";
+import { SelectBox } from "@neos-project/react-ui-components";
 import { Nullable } from "ts-toolbelt/out/Union/Nullable";
 import { OptionalDeep } from "ts-toolbelt/out/Object/Optional";
 
@@ -20,10 +21,10 @@ import {
 } from "@sitegeist/archaeopteryx-neos-bridge";
 import { Tree } from "@sitegeist/archaeopteryx-custom-node-tree";
 
-import { ILink, makeLinkType } from "../../../domain";
+import { AnchorEditorProps, ILink, makeLinkType } from "../../../domain";
 import { IconCard, IconLabel } from "../../../presentation";
 import { Process, Field } from "../../../framework";
-import { getNodeSummary } from "../../../infrastructure/http";
+import { getAnchorTargets, getNodeSummary } from "../../../infrastructure/http";
 import {isSuitableFor} from "./NodeSpecification";
 
 type NodeLinkModel = {
@@ -34,6 +35,81 @@ type NodeLinkOptions = {
     baseNodeType: string;
     loadingDepth: number;
     allowedNodeTypes: string[];
+    anchorTargets: {
+        nodeTypes: string[];
+        anchorPattern: string;
+    };
+};
+
+const DEFAULT_ANCHOR_PATTERN = "c{nodeAggregateId}";
+
+const anchorForNode = (pattern: string, nodeAggregateId: string) =>
+    pattern.split("{nodeAggregateId}").join(nodeAggregateId);
+
+const AnchorTargetSelect: React.FC<AnchorEditorProps<NodeLinkModel, NodeLinkOptions>> = (props) => {
+    const i18n = useI18n();
+    const workspaceName = usePersonalWorkspaceName();
+    const dimensionValues = useDimensionValues();
+    const documentNodeId = props.model?.nodeId ?? undefined;
+    const nodeTypes = (props.options.anchorTargets?.nodeTypes ?? []) as string[];
+    const anchorPattern = props.options.anchorTargets?.anchorPattern ?? DEFAULT_ANCHOR_PATTERN;
+
+    const fetch__anchorTargets = useAsync(async () => {
+        if (!documentNodeId || !workspaceName || !dimensionValues) {
+            return [];
+        }
+        const result = await getAnchorTargets({
+            workspaceName,
+            dimensionValues,
+            documentNodeId,
+            anchorTargetNodeTypes: nodeTypes,
+        });
+
+        return "success" in result ? result.success.anchorTargets : [];
+    }, [documentNodeId, workspaceName, dimensionValues, nodeTypes.join(",")]);
+
+    const anchorTargets = fetch__anchorTargets.value ?? [];
+    const options = anchorTargets.map((anchorTarget) => ({
+        value: anchorForNode(anchorPattern, anchorTarget.nodeAggregateIdentifier),
+        label: anchorTarget.isHidden
+            ? `${anchorTarget.label} (${i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:anchorTargets.hidden")})`
+            : anchorTarget.label,
+        icon: anchorTarget.icon,
+    }));
+    if (
+        props.value &&
+        !fetch__anchorTargets.loading &&
+        !options.some((option) => option.value === props.value)
+    ) {
+        options.push({
+            value: props.value,
+            label: `#${props.value} (${i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:anchorTargets.notFound")})`,
+            icon: "exclamation-triangle",
+        });
+    }
+
+    const placeholder = !documentNodeId
+        ? i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:anchorTargets.selectDocumentFirst")
+        : fetch__anchorTargets.loading
+            ? i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:loadingPreview")
+            : anchorTargets.length === 0
+                ? i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:anchorTargets.empty")
+                : i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:anchorTargets.placeholder");
+
+    return (
+        <SelectBox
+            disabled={!documentNodeId || fetch__anchorTargets.loading || options.length === 0}
+            allowEmpty={true}
+            placeholder={placeholder}
+            options={options}
+            value={props.value ?? ""}
+            onValueChange={(value: string) => props.onChange(value || undefined)}
+            displaySearchBox={options.length > 10}
+            threshold={10}
+            noMatchesFoundLabel={i18n("Neos.Neos:Main:noMatchesFound")}
+            searchBoxLeftToTypeLabel={i18n("Neos.Neos:Main:searchBoxLeftToType")}
+        />
+    );
 };
 
 const NodePreview: React.FC<{ nodeId: string }> = (props) => {
@@ -118,6 +194,11 @@ export const Node = makeLinkType<NodeLinkModel, NodeLinkOptions>(
                     {i18n("Sitegeist.Archaeopteryx:LinkTypes.Node:title")}
                 </IconLabel>
             );
+        },
+
+        AnchorEditor: {
+            isEnabledFor: (options) => Boolean(options.anchorTargets?.nodeTypes?.length),
+            Editor: AnchorTargetSelect,
         },
 
         Preview: (props: { model: NodeLinkModel }) => {
